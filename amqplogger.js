@@ -21,6 +21,7 @@ function createLogger(opts, cb) {
     var amqpUser = opts.user || 'guest';
     var amqpPassword = opts.password || 'guest';
     var exchange = opts.exchange || '';
+    var tag = opts.tag || 'untagged';
 
     var logger = {
         log: unconnectedStub,
@@ -46,7 +47,7 @@ function createLogger(opts, cb) {
             ch.assertExchange(exchange, 'direct', { durable: false });
 
             var publish = function (msg, level) {
-                ch.publish(exchange, level, new Buffer(msg));
+                ch.publish(exchange, level, new Buffer(`[Tag:${tag}] ${msg}`));
             };
 
             logger.log = function (msg) { publish(msg, '') };
